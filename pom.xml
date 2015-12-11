@@ -1,12 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.capaxit.textimage</groupId>
+    
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+      
+    <groupId>org.docx4j.org.capaxit.textimage</groupId>
     <artifactId>TextImageGen</artifactId>
     <packaging>jar</packaging>
-    <version>2.0-SNAAPSHOT</version>
+    <version>1.9</version>
     <name>TextImageGenerator</name>
 
+	<licenses>
+	  <license>
+	    <name>Apache 2</name>
+	    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	    <distribution>repo</distribution>
+	    <comments>A business-friendly OSS license</comments>
+	  </license>
+  	</licenses>
+  	
     <developers>
         <developer>
             <name>Jamie Craane</name>
@@ -14,34 +30,6 @@
             <organization>CapaxIt</organization>
         </developer>
     </developers>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.ccil.cowan.tagsoup</groupId>
-            <artifactId>tagsoup</artifactId>
-            <version>1.2.1</version>
-        </dependency>        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>maven-capaxit-releases</id>
-            <name>Maven Repo for Capax IT (releases)</name>
-            <url>svn:https://capaxit-maven-repo.googlecode.com/svn/maven/releases</url>
-            <uniqueVersion>false</uniqueVersion>
-        </repository>
-        <snapshotRepository>
-            <id>maven-capaxit-snapshot</id>
-            <name>Maven Repo Capax IT (snapshots)</name>
-            <url>svn:https://capaxit-maven-repo.googlecode.com/svn/maven/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
 
     <build>
         <extensions>
@@ -76,5 +64,90 @@
             </plugin>
         </plugins>
     </build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.ccil.cowan.tagsoup</groupId>
+			<artifactId>tagsoup</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		 -->
+	</dependencies>
+
+	<profiles> <!--  use -P eg mvn -Psign-artifacts  -->
+		<profile>
+			<id>sign-artifacts</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+
+		<!-- Deploy a snapshot to GitHub  
+		
+			 See http://stackoverflow.com/questions/14013644/hosting-a-maven-repository-on-github
+			 
+			 To do this:
+			 0. change outputDirectory, for a clean jar
+			 1. comment out parent element (top of pom), since this is what makes deploy push to https://oss.sonatype.org
+			 2. comment out maven-javadoc-plugin, since its not worth bothering with that large upload
+			 3. execute 
+			  
+			       mvn clean deploy -DskipTests -Pgithub-mvn-repo
+		
+		 -->		
+		<profile>
+			<id>github-mvn-repo</id>
+			<build>
+				<plugins>
+			        <plugin>
+			            <groupId>com.github.github</groupId>
+			            <artifactId>site-maven-plugin</artifactId>
+			            <version>0.8</version>
+			            <configuration>
+			                <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+			                <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+			                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+			                <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+			                <includes><include>**/*</include></includes>
+			                <repositoryName>textimagegenerator</repositoryName>      <!-- github repo name -->
+			                <repositoryOwner>plutext</repositoryOwner>    <!-- github username  -->
+			            </configuration>
+			            <executions>
+			              <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+			              <execution>
+			                <goals>
+			                  <goal>site</goal>
+			                </goals>
+			                <phase>deploy</phase>
+			              </execution>
+			            </executions>
+			        </plugin>			
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
