@@ -23,6 +23,10 @@
 	  </license>
   	</licenses>
   	
+	<scm>
+	    <developerConnection>scm:git|git@github.com:plutext/textimagegenerator.git</developerConnection>
+    </scm>  	
+  	
     <developers>
         <developer>
             <name>Jamie Craane</name>
