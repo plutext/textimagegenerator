@@ -5,3 +5,8 @@ out
 .idea/**
 *.iml
 .iml
+/bin/
+/target/
+.settings/**
+.classpath
+.project
