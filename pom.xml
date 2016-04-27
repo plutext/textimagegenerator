@@ -10,7 +10,7 @@
     <groupId>org.docx4j.org.capaxit.textimage</groupId>
     <artifactId>TextImageGen</artifactId>
     <packaging>jar</packaging>
-    <version>1.9</version>
+    <version>1.9.1-SNAPSHOT</version>
     <name>TextImageGenerator</name>
 
 	<licenses>
